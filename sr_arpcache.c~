@@ -217,8 +217,8 @@ int sr_arpcache_init(struct sr_arpcache *cache) {
 	sr_arpcache_insert(cache, server2Mac , 2889875234); /*server2 IP address 172.64.3.10*/
 	sr_arpcache_insert(cache,clientMac , 167772516);/* client-eth0 IP address 10.0.1.100 */
         sr_arpcache_insert(cache,routerEth3Mac, 167772417); /*Router interface IP address 10.0.1.1*/
-	sr_arpcache_insert(cache,routerEth2Mac, 2889876225); /*Router interface IP address 172.64.3.1*/
-	sr_arpcache_insert(cache,routerEth1Mac, 3232236033); /*Router interface IP address 192.168.2.1*/
+	sr_arpcache_insert(cache,routerEth2Mac, 2889876225); /*Router interface IP address 10.0.1.1*/
+	sr_arpcache_insert(cache,routerEth1Mac, 3232236033); /*Router interface IP address 10.0.1.1*/
 	
 	sr_arpcache_dump(cache);
     return success;

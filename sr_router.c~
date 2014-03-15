@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 #include <assert.h>
-
+#include <stdlib.h>
 
 #include "sr_if.h"
 #include "sr_rt.h"
@@ -75,10 +75,36 @@ void sr_handlepacket(struct sr_instance* sr,
   assert(sr);
   assert(packet);
   assert(interface);
+  int i = 0; 
+  uint16_t ethtype= ethertype(packet);
+  sr_arp_hdr_t* arp_hdr = packet+ sizeof(sr_ethernet_hdr_t);
+  struct sr_arpentry *entry= NULL;
+  uint8_t * new_packet = malloc(len*sizeof(uint8_t));
+  sr_arp_hdr_t *new_arp_hdr =new_packet + sizeof(sr_ethernet_hdr_t);
 
-  printf("*** -> Received packet of length %d \n",len);
-  print_hdrs(packet, len);
-  /* fill in code here */
 
+  if(ethtype == ethertype_arp) {
+        entry= sr_arpcache_lookup((&(sr->cache)), ntohl(arp_hdr->ar_tip));
+	if(entry == NULL) {
+		printf("Jeff: The hardware ID is not in the table!\n");
+	} else {
+		
+		printf("Jeff: The entry is in the table!\n");
+		new_arp_hdr->ar_hrd = htonl(1);
+		new_arp_hdr->ar_pro = htonl(0x800);
+		new_arp_hdr->ar_hln = 6;
+		new_arp_hdr->ar_pln = 4; 
+		new_arp_hdr->ar_op = htonl(2); 
+		for(i=0; i<ETHER_ADDR_LEN; i++) {
+			new_arp_hdr->ar_sha[i] = entry->mac[i];
+			new_arp_hdr->ar_tha[i] = arp_hdr->ar_sha[i];
+		}
+		new_arp_hdr->ar_sip = htonl(entry->ip);
+		new_arp_hdr->ar_tip = arp_hdr->ar_sip;
+		if(sr_send_packet(sr, new_packet, (len*sizeof(uint8_t)), interface)==-1){
+			printf("SEND PACKET FAILED!\n");
+		}   		
+	}
+ }
 }/* end sr_ForwardPacket */
 
