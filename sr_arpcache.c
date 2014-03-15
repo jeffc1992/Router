@@ -209,6 +209,8 @@ int sr_arpcache_init(struct sr_arpcache *cache) {
     pthread_mutexattr_settype(&(cache->attr), PTHREAD_MUTEX_RECURSIVE);
     int success = pthread_mutex_init(&(cache->lock), &(cache->attr));
     sr_arpcache_insert(cache, "00000C", 3232236034);
+	sr_arpcache_insert(cache, "00000D", 2889876234);
+	sr_arpcache_insert(cache, "00000E", 167772516); /*10.0.1.100 converted to 
     return success;
 }
 
